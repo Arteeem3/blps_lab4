@@ -12,20 +12,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Parses a single {@code filter} query-string into a JPA {@link Specification}
- * for {@link Listing}.
- * <p>
- * Parses a list of {@code filter} query-string values into a JPA {@link Specification}.
- * Each value has the form {@code field(op)value}; multiple values are passed as
- * repeated {@code filter=} parameters (Spring MVC collects them into a {@code List}).
- * <ul>
- *   <li>Operators: {@code =  !=  >  >=  <  <=}</li>
- *   <li>Supported fields: price, rooms, areaSqm, region, address</li>
- *   <li>Conditions are joined with AND; status = ACTIVE is always appended.</li>
- * </ul>
- * Example: {@code ?filter=price(>=)1000000&filter=rooms(<=)2&filter=region(=)Москва}
- */
 public final class ListingSpecification {
 
     private static final Set<String> NUMERIC_FIELDS =

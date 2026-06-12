@@ -6,10 +6,6 @@ import itmo.blps.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-/**
- * Utility to get the currently authenticated User entity.
- * Works with JAAS authentication where the principal is a plain String (email).
- */
 public final class AuthUtil {
 
     private AuthUtil() {}

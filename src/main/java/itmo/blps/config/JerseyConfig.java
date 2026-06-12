@@ -5,13 +5,6 @@ import org.glassfish.jersey.server.ServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * Provides a custom CamundaJerseyResourceConfig bean with resource model
- * validation disabled. This replaces the default auto-configured bean
- * (via @ConditionalOnMissingBean) and prevents Jersey's
- * ModelValidationException caused by Camunda 7.21's history REST API
- * having conflicting sub-resource paths.
- */
 @Configuration
 public class JerseyConfig {
 
