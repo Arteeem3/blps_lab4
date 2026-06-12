@@ -64,7 +64,6 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                // Remove stateless session policy because Camunda Tasklist requires sessions
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/camunda/**", "/engine-rest/**", "/app/**", "/lib/**", "/api/engine/**").permitAll()
                         .requestMatchers(SecurityConfig::isUnknownApiPath).permitAll()

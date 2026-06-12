@@ -45,7 +45,7 @@ public class AuthService {
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
             throw new org.springframework.security.authentication.BadCredentialsException("Invalid credentials");
         }
-        return "basic"; // HTTP Basic uses headers, this just checks credentials if used explicitly
+        return "basic";
     }
 
     public UserResponse me(User user) {

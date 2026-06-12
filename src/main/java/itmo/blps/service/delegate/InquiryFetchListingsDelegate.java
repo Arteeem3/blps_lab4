@@ -39,7 +39,6 @@ public class InquiryFetchListingsDelegate implements JavaDelegate {
 
         String json = Spin.JSON(options).toString();
         
-        // availableListings variable will be used in Camunda Forms
         execution.setVariable("availableListings", json);
     }
 }
