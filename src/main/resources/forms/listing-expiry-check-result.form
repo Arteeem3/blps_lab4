@@ -1,0 +1,23 @@
+{
+  "components": [
+    {
+      "text": "### Отчёт проверки сроков",
+      "type": "text"
+    },
+    {
+      "label": "Обработано объявлений",
+      "type": "number",
+      "key": "processedCount",
+      "disabled": true
+    },
+    {
+      "label": "Отправлено уведомлений",
+      "type": "number",
+      "key": "notifiedCount",
+      "disabled": true
+    }
+  ],
+  "type": "default",
+  "id": "listing-expiry-check-result",
+  "schemaVersion": 2
+}

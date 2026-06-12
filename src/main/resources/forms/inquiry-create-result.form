@@ -1,0 +1,29 @@
+{
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.21",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.22.0"
+  },
+  "schemaVersion": 11,
+  "components": [
+    {
+      "text": "# Заявка успешно создана",
+      "type": "text",
+      "id": "Field_1"
+    },
+    {
+      "label": "ID заявки",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1",
+        "columns": null
+      },
+      "id": "Field_inquiryId",
+      "key": "inquiryId",
+      "readonly": true
+    }
+  ],
+  "type": "default",
+  "id": "inquiry-create-result"
+}

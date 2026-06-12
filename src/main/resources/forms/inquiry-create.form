@@ -1,0 +1,45 @@
+{
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.21",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.22.0"
+  },
+  "schemaVersion": 11,
+  "components": [
+    {
+      "text": "# Записаться на показ",
+      "type": "text",
+      "id": "Field_1"
+    },
+    {
+      "label": "Объявление",
+      "type": "select",
+      "layout": {
+        "row": "Row_1",
+        "columns": null
+      },
+      "id": "Field_listingId",
+      "key": "listingId",
+      "valuesExpression": "=availableListings",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Сообщение продавцу",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_2",
+        "columns": null
+      },
+      "id": "Field_message",
+      "key": "message",
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default",
+  "id": "inquiry-create"
+}

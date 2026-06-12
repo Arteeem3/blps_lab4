@@ -1,0 +1,47 @@
+{
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.21",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.22.0"
+  },
+  "schemaVersion": 11,
+  "components": [
+    {
+      "text": "# Оплата продвижения",
+      "type": "text",
+      "id": "Field_1"
+    },
+    {
+      "label": "ID объявления",
+      "type": "number",
+      "layout": {
+        "row": "Row_1",
+        "columns": null
+      },
+      "id": "Field_listingId",
+      "key": "listingId",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Тип продвижения",
+      "type": "select",
+      "layout": {
+        "row": "Row_2",
+        "columns": null
+      },
+      "id": "Field_promotionType",
+      "key": "promotionType",
+      "values": [
+        { "label": "Нет", "value": "NONE" },
+        { "label": "Топ", "value": "TOP" },
+        { "label": "Премиум", "value": "PREMIUM" }
+      ],
+      "defaultValue": "NONE"
+    }
+  ],
+  "type": "default",
+  "id": "listing-promotion-start"
+}

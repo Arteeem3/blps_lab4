@@ -1,0 +1,12 @@
+{
+  "components": [
+    {
+      "text": "# Запись на показ недвижимости\nНажмите **Start**, чтобы загрузить объявления и выбрать объект для просмотра.",
+      "type": "text",
+      "id": "Field_header"
+    }
+  ],
+  "type": "default",
+  "id": "inquiry-create-start",
+  "schemaVersion": 11
+}

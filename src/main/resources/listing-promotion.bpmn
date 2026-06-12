@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+             targetNamespace="http://bpmn.io/schema/bpmn"
+             id="listing-promotion-definitions">
+
+  <process id="listing-promotion" name="[POST] Оплата продвижения" isExecutable="true"
+           camunda:historyTimeToLive="180"
+           camunda:candidateStarterGroups="SELLER,ADMIN">
+
+    <startEvent camunda:initiator="starter" id="start" camunda:formKey="camunda-forms:deployment:listing-promotion-start.form">
+      <outgoing>flow-start-to-pay</outgoing>
+    </startEvent>
+
+    <sequenceFlow id="flow-start-to-pay" sourceRef="start" targetRef="task-pay" />
+
+    <serviceTask id="task-pay" name="Оплатить продвижение" camunda:delegateExpression="${paymentPromotionDelegate}">
+      <incoming>flow-start-to-pay</incoming>
+      <outgoing>flow-pay-to-result</outgoing>
+    </serviceTask>
+
+    <boundaryEvent id="error-boundary-pay" attachedToRef="task-pay">
+      <outgoing>flow-error-to-error-task</outgoing>
+      <errorEventDefinition />
+    </boundaryEvent>
+
+    <sequenceFlow id="flow-pay-to-result" sourceRef="task-pay" targetRef="task-result" />
+
+    <sequenceFlow id="flow-error-to-error-task" sourceRef="error-boundary-pay" targetRef="task-error" />
+
+    <userTask id="task-result" name="Результат"
+              camunda:formKey="camunda-forms:deployment:listing-promotion-result.form"
+              camunda:candidateGroups="SELLER,ADMIN"
+              camunda:assignee="${starter}">
+      <extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="starter">${execution.getVariable('starter') == null ? 'demo' : starter}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </extensionElements>
+      <incoming>flow-pay-to-result</incoming>
+      <outgoing>flow-result-to-end</outgoing>
+    </userTask>
+
+    <sequenceFlow id="flow-result-to-end" sourceRef="task-result" targetRef="end" />
+
+    <endEvent id="end">
+      <incoming>flow-result-to-end</incoming>
+    </endEvent>
+
+    <userTask id="task-error" name="Ошибка оплаты"
+              camunda:formKey="camunda-forms:deployment:listing-promotion-result.form"
+              camunda:candidateGroups="SELLER,ADMIN"
+              camunda:assignee="${starter}">
+      <extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="starter">${execution.getVariable('starter') == null ? 'demo' : starter}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </extensionElements>
+      <incoming>flow-error-to-error-task</incoming>
+      <outgoing>flow-error-task-to-error-end</outgoing>
+    </userTask>
+
+    <sequenceFlow id="flow-error-task-to-error-end" sourceRef="task-error" targetRef="error-end" />
+
+    <endEvent id="error-end">
+      <incoming>flow-error-task-to-error-end</incoming>
+    </endEvent>
+
+  </process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="listing-promotion">
+      <bpmndi:BPMNShape id="shape-start" bpmnElement="start">
+        <omgdc:Bounds x="162" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-pay" bpmnElement="task-pay">
+        <omgdc:Bounds x="290" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-error-boundary-pay" bpmnElement="error-boundary-pay">
+        <omgdc:Bounds x="332" y="122" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-result" bpmnElement="task-result">
+        <omgdc:Bounds x="490" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-end" bpmnElement="end">
+        <omgdc:Bounds x="672" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-error" bpmnElement="task-error">
+        <omgdc:Bounds x="490" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-error-end" bpmnElement="error-end">
+        <omgdc:Bounds x="672" y="242" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge-flow-start-to-pay" bpmnElement="flow-start-to-pay">
+        <omgdi:waypoint x="198" y="100" />
+        <omgdi:waypoint x="290" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-pay-to-result" bpmnElement="flow-pay-to-result">
+        <omgdi:waypoint x="390" y="100" />
+        <omgdi:waypoint x="490" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-result-to-end" bpmnElement="flow-result-to-end">
+        <omgdi:waypoint x="590" y="100" />
+        <omgdi:waypoint x="672" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-error-to-error-task" bpmnElement="flow-error-to-error-task">
+        <omgdi:waypoint x="350" y="158" />
+        <omgdi:waypoint x="350" y="260" />
+        <omgdi:waypoint x="490" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-error-task-to-error-end" bpmnElement="flow-error-task-to-error-end">
+        <omgdi:waypoint x="590" y="260" />
+        <omgdi:waypoint x="672" y="260" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</definitions>

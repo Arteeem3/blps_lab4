@@ -1,0 +1,12 @@
+{
+  "components": [
+    {
+      "text": "# Просмотр списка заявок на показ\nНажмите **Start**, чтобы загрузить список ваших заявок.",
+      "type": "text",
+      "id": "Field_header"
+    }
+  ],
+  "type": "default",
+  "id": "inquiry-list-start",
+  "schemaVersion": 11
+}

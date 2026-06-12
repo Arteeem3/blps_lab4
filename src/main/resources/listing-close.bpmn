@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+             targetNamespace="http://bpmn.io/schema/bpmn"
+             id="listing-close-definitions">
+
+  <process id="listing-close" name="[POST] Закрытие объявления" isExecutable="true"
+           camunda:historyTimeToLive="180"
+           camunda:candidateStarterGroups="SELLER,ADMIN">
+
+    <startEvent camunda:initiator="starter" id="start" name="Начало" camunda:formKey="camunda-forms:deployment:listing-close-start.form">
+      <outgoing>flow-start-to-close</outgoing>
+    </startEvent>
+
+    <serviceTask id="task-close" name="Закрыть объявление" camunda:delegateExpression="${listingCloseDelegate}">
+      <incoming>flow-start-to-close</incoming>
+      <outgoing>flow-close-to-result</outgoing>
+    </serviceTask>
+
+    <boundaryEvent id="error-boundary" attachedToRef="task-close">
+      <outgoing>flow-error-to-error-task</outgoing>
+      <errorEventDefinition />
+    </boundaryEvent>
+
+    <userTask id="task-result" name="Результат"
+              camunda:formKey="camunda-forms:deployment:listing-close-result.form"
+              camunda:candidateGroups="SELLER,ADMIN"
+              camunda:assignee="${starter}">
+      <extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="starter">${execution.getVariable('starter') == null ? 'demo' : starter}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </extensionElements>
+      <incoming>flow-close-to-result</incoming>
+      <outgoing>flow-result-to-end</outgoing>
+    </userTask>
+
+    <endEvent id="end" name="Конец">
+      <incoming>flow-result-to-end</incoming>
+    </endEvent>
+
+    <userTask id="task-error" name="Ошибка"
+              camunda:formKey="camunda-forms:deployment:listing-close-result.form"
+              camunda:candidateGroups="SELLER,ADMIN"
+              camunda:assignee="${starter}">
+      <extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="starter">${execution.getVariable('starter') == null ? 'demo' : starter}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </extensionElements>
+      <incoming>flow-error-to-error-task</incoming>
+      <outgoing>flow-error-task-to-error-end</outgoing>
+    </userTask>
+
+    <endEvent id="error-end" name="Конец (ошибка)">
+      <incoming>flow-error-task-to-error-end</incoming>
+    </endEvent>
+
+    <sequenceFlow id="flow-start-to-close" sourceRef="start" targetRef="task-close" />
+    <sequenceFlow id="flow-close-to-result" sourceRef="task-close" targetRef="task-result" />
+    <sequenceFlow id="flow-result-to-end" sourceRef="task-result" targetRef="end" />
+    <sequenceFlow id="flow-error-to-error-task" sourceRef="error-boundary" targetRef="task-error" />
+    <sequenceFlow id="flow-error-task-to-error-end" sourceRef="task-error" targetRef="error-end" />
+
+  </process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_listing_close">
+    <bpmndi:BPMNPlane id="BPMNPlane_listing_close" bpmnElement="listing-close">
+      <bpmndi:BPMNShape id="shape-start" bpmnElement="start">
+        <omgdc:Bounds x="150" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-close" bpmnElement="task-close">
+        <omgdc:Bounds x="270" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-error-boundary" bpmnElement="error-boundary">
+        <omgdc:Bounds x="302" y="122" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-result" bpmnElement="task-result">
+        <omgdc:Bounds x="470" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-end" bpmnElement="end">
+        <omgdc:Bounds x="670" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-error" bpmnElement="task-error">
+        <omgdc:Bounds x="470" y="210" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-error-end" bpmnElement="error-end">
+        <omgdc:Bounds x="670" y="232" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge-flow-start-to-close" bpmnElement="flow-start-to-close">
+        <omgdi:waypoint x="186" y="100" />
+        <omgdi:waypoint x="270" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-close-to-result" bpmnElement="flow-close-to-result">
+        <omgdi:waypoint x="370" y="100" />
+        <omgdi:waypoint x="470" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-result-to-end" bpmnElement="flow-result-to-end">
+        <omgdi:waypoint x="570" y="100" />
+        <omgdi:waypoint x="670" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-error-to-error-task" bpmnElement="flow-error-to-error-task">
+        <omgdi:waypoint x="320" y="158" />
+        <omgdi:waypoint x="320" y="250" />
+        <omgdi:waypoint x="470" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-error-task-to-error-end" bpmnElement="flow-error-task-to-error-end">
+        <omgdi:waypoint x="570" y="250" />
+        <omgdi:waypoint x="670" y="250" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</definitions>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" id="listing-renew-definitions" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.47.0">
+  <process id="listing-renew" name="[POST] Продление / Архивация объявления" isExecutable="true" camunda:candidateStarterGroups="SELLER,ADMIN" camunda:historyTimeToLive="180">
+    <startEvent id="start" camunda:formKey="camunda-forms:deployment:listing-renew-start.form" camunda:initiator="starter">
+      <outgoing>flow-start-to-gw</outgoing>
+    </startEvent>
+    <sequenceFlow id="flow-start-to-gw" sourceRef="start" targetRef="gw-action" />
+    <exclusiveGateway id="gw-action" name="Действие?">
+      <incoming>flow-start-to-gw</incoming>
+      <outgoing>flow-gw-to-renew</outgoing>
+      <outgoing>flow-gw-to-archive</outgoing>
+    </exclusiveGateway>
+    <sequenceFlow id="flow-gw-to-renew" name="Продлить" sourceRef="gw-action" targetRef="task-renew">
+      <conditionExpression xsi:type="tFormalExpression">${relevant == true}</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow-gw-to-archive" name="Архивировать" sourceRef="gw-action" targetRef="task-archive">
+      <conditionExpression xsi:type="tFormalExpression">${relevant != true}</conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="task-renew" name="Продлить объявление" camunda:delegateExpression="${listingConfirmRelevanceDelegate}">
+      <incoming>flow-gw-to-renew</incoming>
+      <outgoing>flow-renew-to-merge</outgoing>
+    </serviceTask>
+    <boundaryEvent id="error-boundary-renew" attachedToRef="task-renew">
+      <outgoing>flow-error-renew</outgoing>
+      <errorEventDefinition />
+    </boundaryEvent>
+    <serviceTask id="task-archive" name="Архивировать объявление" camunda:delegateExpression="${listingConfirmRelevanceDelegate}">
+      <incoming>flow-gw-to-archive</incoming>
+      <outgoing>flow-archive-to-merge</outgoing>
+    </serviceTask>
+    <boundaryEvent id="error-boundary-archive" attachedToRef="task-archive">
+      <outgoing>flow-error-archive</outgoing>
+      <errorEventDefinition />
+    </boundaryEvent>
+    <sequenceFlow id="flow-renew-to-merge" sourceRef="task-renew" targetRef="merge-gw" />
+    <sequenceFlow id="flow-archive-to-merge" sourceRef="task-archive" targetRef="merge-gw" />
+    <exclusiveGateway id="merge-gw">
+      <incoming>flow-renew-to-merge</incoming>
+      <incoming>flow-archive-to-merge</incoming>
+      <outgoing>flow-merge-to-result</outgoing>
+    </exclusiveGateway>
+    <sequenceFlow id="flow-merge-to-result" sourceRef="merge-gw" targetRef="task-result" />
+    <userTask id="task-result" name="Результат" camunda:formKey="camunda-forms:deployment:listing-renew-result.form" camunda:assignee="${starter}" camunda:candidateGroups="SELLER,ADMIN">
+      <extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="starter">${execution.getVariable('starter') == null ? 'demo' : starter}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </extensionElements>
+      <incoming>flow-merge-to-result</incoming>
+      <outgoing>flow-result-to-end</outgoing>
+    </userTask>
+    <sequenceFlow id="flow-result-to-end" sourceRef="task-result" targetRef="end" />
+    <endEvent id="end">
+      <incoming>flow-result-to-end</incoming>
+    </endEvent>
+    <sequenceFlow id="flow-error-renew" sourceRef="error-boundary-renew" targetRef="task-error" />
+    <sequenceFlow id="flow-error-archive" sourceRef="error-boundary-archive" targetRef="task-error" />
+    <userTask id="task-error" name="Ошибка" camunda:formKey="camunda-forms:deployment:listing-renew-result.form" camunda:assignee="${starter}" camunda:candidateGroups="SELLER,ADMIN">
+      <extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="starter">${execution.getVariable('starter') == null ? 'demo' : starter}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </extensionElements>
+      <incoming>flow-error-renew</incoming>
+      <incoming>flow-error-archive</incoming>
+      <outgoing>flow-error-to-end</outgoing>
+    </userTask>
+    <sequenceFlow id="flow-error-to-end" sourceRef="task-error" targetRef="error-end" />
+    <endEvent id="error-end">
+      <incoming>flow-error-to-end</incoming>
+    </endEvent>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="listing-renew">
+      <bpmndi:BPMNShape id="shape-start" bpmnElement="start">
+        <omgdc:Bounds x="132" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-gw-action" bpmnElement="gw-action" isMarkerVisible="true">
+        <omgdc:Bounds x="255" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-renew" bpmnElement="task-renew">
+        <omgdc:Bounds x="380" y="38" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-archive" bpmnElement="task-archive">
+        <omgdc:Bounds x="380" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-error" bpmnElement="task-error">
+        <omgdc:Bounds x="590" y="310" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-error-end" bpmnElement="error-end">
+        <omgdc:Bounds x="752" y="332" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-merge-gw" bpmnElement="merge-gw" isMarkerVisible="true">
+        <omgdc:Bounds x="565" y="53" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-result" bpmnElement="task-result">
+        <omgdc:Bounds x="680" y="38" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-end" bpmnElement="end">
+        <omgdc:Bounds x="862" y="60" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-error-boundary-archive" bpmnElement="error-boundary-archive">
+        <omgdc:Bounds x="442" y="222" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-error-boundary-renew" bpmnElement="error-boundary-renew">
+        <omgdc:Bounds x="442" y="100" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge-flow-start-to-gw" bpmnElement="flow-start-to-gw">
+        <omgdi:waypoint x="168" y="120" />
+        <omgdi:waypoint x="255" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-gw-to-renew" bpmnElement="flow-gw-to-renew">
+        <omgdi:waypoint x="280" y="95" />
+        <omgdi:waypoint x="280" y="78" />
+        <omgdi:waypoint x="380" y="78" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-gw-to-archive" bpmnElement="flow-gw-to-archive">
+        <omgdi:waypoint x="280" y="145" />
+        <omgdi:waypoint x="280" y="200" />
+        <omgdi:waypoint x="380" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-renew-to-merge" bpmnElement="flow-renew-to-merge">
+        <omgdi:waypoint x="480" y="78" />
+        <omgdi:waypoint x="560" y="78" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-archive-to-merge" bpmnElement="flow-archive-to-merge">
+        <omgdi:waypoint x="480" y="228" />
+        <omgdi:waypoint x="590" y="228" />
+        <omgdi:waypoint x="590" y="103" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-merge-to-result" bpmnElement="flow-merge-to-result">
+        <omgdi:waypoint x="615" y="78" />
+        <omgdi:waypoint x="680" y="78" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-result-to-end" bpmnElement="flow-result-to-end">
+        <omgdi:waypoint x="780" y="78" />
+        <omgdi:waypoint x="862" y="78" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-error-renew" bpmnElement="flow-error-renew">
+        <omgdi:waypoint x="478" y="118" />
+        <omgdi:waypoint x="520" y="118" />
+        <omgdi:waypoint x="520" y="350" />
+        <omgdi:waypoint x="590" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-error-archive" bpmnElement="flow-error-archive">
+        <omgdi:waypoint x="460" y="258" />
+        <omgdi:waypoint x="460" y="350" />
+        <omgdi:waypoint x="590" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-error-to-end" bpmnElement="flow-error-to-end">
+        <omgdi:waypoint x="690" y="350" />
+        <omgdi:waypoint x="752" y="350" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

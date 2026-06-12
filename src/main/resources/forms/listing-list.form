@@ -1,0 +1,40 @@
+{
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.21",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.22.0"
+  },
+  "schemaVersion": 11,
+  "components": [
+    {
+      "text": "# Список объявлений",
+      "type": "text",
+      "id": "Field_header"
+    },
+    {
+      "label": "Объявления",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_1",
+        "columns": null
+      },
+      "id": "Field_listingsText",
+      "key": "listingsText",
+      "readonly": true
+    },
+    {
+      "label": "Завершить процесс?",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_2",
+        "columns": null
+      },
+      "id": "Field_finish",
+      "key": "finish",
+      "defaultValue": false
+    }
+  ],
+  "type": "default",
+  "id": "listing-list"
+}

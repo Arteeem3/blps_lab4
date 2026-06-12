@@ -1,0 +1,101 @@
+{
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.21",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.22.0"
+  },
+  "schemaVersion": 11,
+  "components": [
+    {
+      "text": "# Редактировать объявление",
+      "type": "text",
+      "id": "Field_1"
+    },
+    {
+      "label": "ID объявления",
+      "type": "number",
+      "layout": {
+        "row": "Row_0",
+        "columns": null
+      },
+      "id": "Field_listingId",
+      "key": "listingId",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Заголовок",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1",
+        "columns": null
+      },
+      "id": "Field_title",
+      "key": "title"
+    },
+    {
+      "label": "Описание",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_2",
+        "columns": null
+      },
+      "id": "Field_description",
+      "key": "description"
+    },
+    {
+      "label": "Адрес",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_3",
+        "columns": null
+      },
+      "id": "Field_address",
+      "key": "address"
+    },
+    {
+      "label": "Регион",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_3",
+        "columns": null
+      },
+      "id": "Field_region",
+      "key": "region"
+    },
+    {
+      "label": "Цена",
+      "type": "number",
+      "layout": {
+        "row": "Row_4",
+        "columns": null
+      },
+      "id": "Field_price",
+      "key": "price"
+    },
+    {
+      "label": "Площадь",
+      "type": "number",
+      "layout": {
+        "row": "Row_4",
+        "columns": null
+      },
+      "id": "Field_areaSqm",
+      "key": "areaSqm"
+    },
+    {
+      "label": "Комнат",
+      "type": "number",
+      "layout": {
+        "row": "Row_4",
+        "columns": null
+      },
+      "id": "Field_rooms",
+      "key": "rooms"
+    }
+  ],
+  "type": "default",
+  "id": "listing-update-start"
+}

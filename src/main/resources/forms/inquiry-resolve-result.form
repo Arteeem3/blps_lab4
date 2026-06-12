@@ -1,0 +1,23 @@
+{
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.21",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.22.0"
+  },
+  "schemaVersion": 11,
+  "components": [
+    {
+      "text": "# Результат согласования",
+      "type": "text",
+      "id": "Field_1"
+    },
+    {
+      "text": "Заявка успешно обработана. Оповещение отправлено покупателю.",
+      "type": "text",
+      "id": "Field_2"
+    }
+  ],
+  "type": "default",
+  "id": "inquiry-resolve-result"
+}

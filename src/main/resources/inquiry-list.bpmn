@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+             targetNamespace="http://bpmn.io/schema/bpmn"
+             id="inquiry-list-definitions">
+  <process id="inquiry-list" name="[GET] Список заявок" isExecutable="true" camunda:historyTimeToLive="180" camunda:candidateStarterGroups="SELLER,BUYER,ADMIN">
+    <startEvent camunda:initiator="starter" id="start" camunda:formKey="camunda-forms:deployment:inquiry-list-start.form">
+      <extensionElements>
+        <camunda:executionListener event="end" expression="${execution.setVariable('finish', false)}" />
+      </extensionElements>
+      <outgoing>flow-start-to-load</outgoing>
+    </startEvent>
+
+    <serviceTask id="task-load" name="Загрузить заявки" camunda:delegateExpression="${inquiryListLoadDelegate}">
+      <incoming>flow-start-to-load</incoming>
+      <incoming>flow-finish-no</incoming>
+      <outgoing>flow-load-to-get</outgoing>
+    </serviceTask>
+
+    <userTask id="task-get" name="Список заявок" camunda:formKey="camunda-forms:deployment:inquiry-list.form" camunda:assignee="${starter}" camunda:candidateGroups="SELLER,BUYER,ADMIN">
+      <extensionElements>
+        <camunda:inputOutput>
+           <camunda:inputParameter name="starter">${execution.getVariable('starter') == null ? 'demo' : starter}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </extensionElements>
+      <incoming>flow-load-to-get</incoming>
+      <outgoing>flow-get-to-gw</outgoing>
+    </userTask>
+
+    <exclusiveGateway id="gw-finish" name="Завершить?">
+      <incoming>flow-get-to-gw</incoming>
+      <outgoing>flow-finish-yes</outgoing>
+      <outgoing>flow-finish-no</outgoing>
+    </exclusiveGateway>
+
+    <endEvent id="end">
+      <incoming>flow-finish-yes</incoming>
+    </endEvent>
+
+    <sequenceFlow id="flow-start-to-load" sourceRef="start" targetRef="task-load"/>
+    <sequenceFlow id="flow-load-to-get" sourceRef="task-load" targetRef="task-get"/>
+    <sequenceFlow id="flow-get-to-gw" sourceRef="task-get" targetRef="gw-finish"/>
+    <sequenceFlow id="flow-finish-yes" name="да" sourceRef="gw-finish" targetRef="end">
+      <conditionExpression xsi:type="tFormalExpression">${finish == true}</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow-finish-no" name="нет" sourceRef="gw-finish" targetRef="task-load">
+      <conditionExpression xsi:type="tFormalExpression">${finish != true}</conditionExpression>
+    </sequenceFlow>
+  </process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_inquiry-list">
+    <bpmndi:BPMNPlane id="BPMNPlane_inquiry-list" bpmnElement="inquiry-list">
+      <bpmndi:BPMNShape id="start_di" bpmnElement="start"><omgdc:Bounds x="150" y="100" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task-load_di" bpmnElement="task-load"><omgdc:Bounds x="250" y="78" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task-get_di" bpmnElement="task-get"><omgdc:Bounds x="400" y="78" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw-finish_di" bpmnElement="gw-finish"><omgdc:Bounds x="550" y="93" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_di" bpmnElement="end"><omgdc:Bounds x="650" y="100" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="flow-start-to-load_di" bpmnElement="flow-start-to-load"><omgdi:waypoint x="186" y="118"/><omgdi:waypoint x="250" y="118"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow-load-to-get_di" bpmnElement="flow-load-to-get"><omgdi:waypoint x="350" y="118"/><omgdi:waypoint x="400" y="118"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow-get-to-gw_di" bpmnElement="flow-get-to-gw"><omgdi:waypoint x="500" y="118"/><omgdi:waypoint x="550" y="118"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow-finish-yes_di" bpmnElement="flow-finish-yes"><omgdi:waypoint x="600" y="118"/><omgdi:waypoint x="650" y="118"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow-finish-no_di" bpmnElement="flow-finish-no"><omgdi:waypoint x="575" y="143"/><omgdi:waypoint x="575" y="200"/><omgdi:waypoint x="300" y="200"/><omgdi:waypoint x="300" y="158"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

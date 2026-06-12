@@ -1,0 +1,42 @@
+{
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.21",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.22.0"
+  },
+  "schemaVersion": 11,
+  "components": [
+    {
+      "text": "# Результат просмотра",
+      "type": "text",
+      "id": "Field_1"
+    },
+    {
+      "label": "ID заявки",
+      "type": "number",
+      "layout": {
+        "row": "Row_1",
+        "columns": null
+      },
+      "id": "Field_inquiryId",
+      "key": "inquiryId",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Я готов(а) купить эту недвижимость",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_2",
+        "columns": null
+      },
+      "id": "Field_willBuy",
+      "key": "willBuy",
+      "defaultValue": false
+    }
+  ],
+  "type": "default",
+  "id": "inquiry-visit-start"
+}

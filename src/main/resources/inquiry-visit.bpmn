@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+             targetNamespace="http://bpmn.io/schema/bpmn"
+             id="inquiry-visit-definitions">
+
+  <process id="inquiry-visit" name="[POST] Результат показа" isExecutable="true"
+           camunda:historyTimeToLive="180"
+           camunda:candidateStarterGroups="BUYER,ADMIN">
+
+    <startEvent camunda:initiator="starter" id="start" camunda:formKey="camunda-forms:deployment:inquiry-visit-start.form">
+      <outgoing>flow-start-to-save</outgoing>
+    </startEvent>
+
+    <sequenceFlow id="flow-start-to-save" sourceRef="start" targetRef="task-save" />
+
+    <serviceTask id="task-save" name="Сохранить решение" camunda:delegateExpression="${inquiryVisitResultDelegate}">
+      <incoming>flow-start-to-save</incoming>
+      <outgoing>flow-save-to-gw</outgoing>
+    </serviceTask>
+
+    <boundaryEvent id="error-boundary-save" attachedToRef="task-save">
+      <outgoing>flow-error-to-error-task</outgoing>
+      <errorEventDefinition />
+    </boundaryEvent>
+
+    <sequenceFlow id="flow-save-to-gw" sourceRef="task-save" targetRef="gw-result" />
+
+    <exclusiveGateway id="gw-result" name="Решение покупателя?">
+      <incoming>flow-save-to-gw</incoming>
+      <outgoing>flow-gw-to-buy</outgoing>
+      <outgoing>flow-gw-to-nobuy</outgoing>
+    </exclusiveGateway>
+
+    <sequenceFlow id="flow-gw-to-buy" name="Покупаю" sourceRef="gw-result" targetRef="task-buy">
+      <conditionExpression xsi:type="tFormalExpression">${willBuy == true}</conditionExpression>
+    </sequenceFlow>
+
+    <sequenceFlow id="flow-gw-to-nobuy" name="Не покупаю" sourceRef="gw-result" targetRef="task-nobuy">
+      <conditionExpression xsi:type="tFormalExpression">${willBuy != true}</conditionExpression>
+    </sequenceFlow>
+
+    <userTask id="task-buy" name="Покупка подтверждена"
+              camunda:formKey="camunda-forms:deployment:inquiry-visit-result.form"
+              camunda:candidateGroups="BUYER,ADMIN"
+              camunda:assignee="${starter}">
+      <extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="starter">${execution.getVariable('starter') == null ? 'demo' : starter}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </extensionElements>
+      <incoming>flow-gw-to-buy</incoming>
+      <outgoing>flow-buy-to-end</outgoing>
+    </userTask>
+
+    <sequenceFlow id="flow-buy-to-end" sourceRef="task-buy" targetRef="buy-end" />
+
+    <endEvent id="buy-end">
+      <incoming>flow-buy-to-end</incoming>
+    </endEvent>
+
+    <userTask id="task-nobuy" name="Отказ от покупки"
+              camunda:formKey="camunda-forms:deployment:inquiry-visit-result.form"
+              camunda:candidateGroups="BUYER,ADMIN"
+              camunda:assignee="${starter}">
+      <extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="starter">${execution.getVariable('starter') == null ? 'demo' : starter}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </extensionElements>
+      <incoming>flow-gw-to-nobuy</incoming>
+      <outgoing>flow-nobuy-to-end</outgoing>
+    </userTask>
+
+    <sequenceFlow id="flow-nobuy-to-end" sourceRef="task-nobuy" targetRef="nobuy-end" />
+
+    <endEvent id="nobuy-end">
+      <incoming>flow-nobuy-to-end</incoming>
+    </endEvent>
+
+    <sequenceFlow id="flow-error-to-error-task" sourceRef="error-boundary-save" targetRef="task-error" />
+
+    <userTask id="task-error" name="Ошибка"
+              camunda:formKey="camunda-forms:deployment:inquiry-visit-result.form"
+              camunda:candidateGroups="BUYER,ADMIN"
+              camunda:assignee="${starter}">
+      <extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="starter">${execution.getVariable('starter') == null ? 'demo' : starter}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </extensionElements>
+      <incoming>flow-error-to-error-task</incoming>
+      <outgoing>flow-error-task-to-error-end</outgoing>
+    </userTask>
+
+    <sequenceFlow id="flow-error-task-to-error-end" sourceRef="task-error" targetRef="error-end" />
+
+    <endEvent id="error-end">
+      <incoming>flow-error-task-to-error-end</incoming>
+    </endEvent>
+
+  </process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="inquiry-visit">
+      <bpmndi:BPMNShape id="shape-start" bpmnElement="start">
+        <omgdc:Bounds x="132" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-save" bpmnElement="task-save">
+        <omgdc:Bounds x="250" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-error-boundary-save" bpmnElement="error-boundary-save">
+        <omgdc:Bounds x="312" y="122" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-gw-result" bpmnElement="gw-result" isMarkerVisible="true">
+        <omgdc:Bounds x="435" y="75" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-buy" bpmnElement="task-buy">
+        <omgdc:Bounds x="560" y="38" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-buy-end" bpmnElement="buy-end">
+        <omgdc:Bounds x="742" y="60" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-nobuy" bpmnElement="task-nobuy">
+        <omgdc:Bounds x="560" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-nobuy-end" bpmnElement="nobuy-end">
+        <omgdc:Bounds x="742" y="182" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-error" bpmnElement="task-error">
+        <omgdc:Bounds x="450" y="260" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-error-end" bpmnElement="error-end">
+        <omgdc:Bounds x="632" y="282" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge-flow-start-to-save" bpmnElement="flow-start-to-save">
+        <omgdi:waypoint x="168" y="100" />
+        <omgdi:waypoint x="250" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-save-to-gw" bpmnElement="flow-save-to-gw">
+        <omgdi:waypoint x="350" y="100" />
+        <omgdi:waypoint x="435" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-gw-to-buy" bpmnElement="flow-gw-to-buy">
+        <omgdi:waypoint x="460" y="75" />
+        <omgdi:waypoint x="460" y="78" />
+        <omgdi:waypoint x="560" y="78" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-gw-to-nobuy" bpmnElement="flow-gw-to-nobuy">
+        <omgdi:waypoint x="460" y="125" />
+        <omgdi:waypoint x="460" y="200" />
+        <omgdi:waypoint x="560" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-buy-to-end" bpmnElement="flow-buy-to-end">
+        <omgdi:waypoint x="660" y="78" />
+        <omgdi:waypoint x="742" y="78" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-nobuy-to-end" bpmnElement="flow-nobuy-to-end">
+        <omgdi:waypoint x="660" y="200" />
+        <omgdi:waypoint x="742" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-error-to-error-task" bpmnElement="flow-error-to-error-task">
+        <omgdi:waypoint x="330" y="158" />
+        <omgdi:waypoint x="330" y="300" />
+        <omgdi:waypoint x="450" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-error-task-to-error-end" bpmnElement="flow-error-task-to-error-end">
+        <omgdi:waypoint x="550" y="300" />
+        <omgdi:waypoint x="632" y="300" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</definitions>

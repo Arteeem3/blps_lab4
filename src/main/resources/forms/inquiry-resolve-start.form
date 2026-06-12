@@ -1,0 +1,78 @@
+{
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.21",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.22.0"
+  },
+  "schemaVersion": 11,
+  "components": [
+    {
+      "text": "# Ответить на заявку",
+      "type": "text",
+      "id": "Field_1"
+    },
+    {
+      "label": "ID заявки",
+      "type": "number",
+      "layout": {
+        "row": "Row_1",
+        "columns": null
+      },
+      "id": "Field_inquiryId",
+      "key": "inquiryId",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Решение",
+      "type": "select",
+      "layout": {
+        "row": "Row_2",
+        "columns": null
+      },
+      "id": "Field_decision",
+      "key": "decision",
+      "values": [
+        { "label": "Подтвердить", "value": "ACCEPT" },
+        { "label": "Отклонить", "value": "REJECT" }
+      ],
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Время показа (YYYY-MM-DDTHH:mm:ssZ) - для подтверждения",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_3",
+        "columns": null
+      },
+      "id": "Field_scheduledAt",
+      "key": "scheduledAt"
+    },
+    {
+      "label": "Контактная информация",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_4",
+        "columns": null
+      },
+      "id": "Field_contactInfo",
+      "key": "contactInfo"
+    },
+    {
+      "label": "Причина отказа (если отклонено)",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_5",
+        "columns": null
+      },
+      "id": "Field_reason",
+      "key": "reason"
+    }
+  ],
+  "type": "default",
+  "id": "inquiry-resolve-start"
+}

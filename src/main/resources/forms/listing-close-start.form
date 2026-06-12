@@ -1,0 +1,13 @@
+{
+  "components": [
+    {
+      "label": "ID объявления для закрытия",
+      "type": "number",
+      "key": "listingId",
+      "validate": { "required": true }
+    }
+  ],
+  "type": "default",
+  "id": "listing-close-start",
+  "schemaVersion": 2
+}

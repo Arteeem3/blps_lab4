@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" id="inquiry-resolve-definitions" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.47.0">
+  <process id="inquiry-resolve" name="[POST] Согласовать заявку" isExecutable="true" camunda:candidateStarterGroups="SELLER,ADMIN" camunda:historyTimeToLive="180">
+    <startEvent id="start" camunda:formKey="camunda-forms:deployment:inquiry-resolve-start.form" camunda:initiator="starter">
+      <outgoing>flow-start-to-gw</outgoing>
+    </startEvent>
+    <sequenceFlow id="flow-start-to-gw" sourceRef="start" targetRef="gw-decision" />
+    <exclusiveGateway id="gw-decision" name="Решение?">
+      <incoming>flow-start-to-gw</incoming>
+      <outgoing>flow-gw-to-confirm</outgoing>
+      <outgoing>flow-gw-to-reject</outgoing>
+    </exclusiveGateway>
+    <sequenceFlow id="flow-gw-to-confirm" name="Подтвердить" sourceRef="gw-decision" targetRef="task-confirm">
+      <conditionExpression xsi:type="tFormalExpression">${decision == 'CONFIRM'}</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow-gw-to-reject" name="Отклонить" sourceRef="gw-decision" targetRef="task-reject">
+      <conditionExpression xsi:type="tFormalExpression">${decision == 'REJECT'}</conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="task-confirm" name="Подтвердить показ" camunda:delegateExpression="${inquiryResolveDelegate}">
+      <incoming>flow-gw-to-confirm</incoming>
+      <outgoing>flow-confirm-to-merge</outgoing>
+    </serviceTask>
+    <boundaryEvent id="error-boundary-confirm" attachedToRef="task-confirm">
+      <outgoing>flow-error-confirm</outgoing>
+      <errorEventDefinition />
+    </boundaryEvent>
+    <serviceTask id="task-reject" name="Отклонить показ" camunda:delegateExpression="${inquiryResolveDelegate}">
+      <incoming>flow-gw-to-reject</incoming>
+      <outgoing>flow-reject-to-merge</outgoing>
+    </serviceTask>
+    <boundaryEvent id="error-boundary-reject" attachedToRef="task-reject">
+      <outgoing>flow-error-reject</outgoing>
+      <errorEventDefinition />
+    </boundaryEvent>
+    <sequenceFlow id="flow-confirm-to-merge" sourceRef="task-confirm" targetRef="merge-gw" />
+    <sequenceFlow id="flow-reject-to-merge" sourceRef="task-reject" targetRef="merge-gw" />
+    <exclusiveGateway id="merge-gw">
+      <incoming>flow-confirm-to-merge</incoming>
+      <incoming>flow-reject-to-merge</incoming>
+      <outgoing>flow-merge-to-result</outgoing>
+    </exclusiveGateway>
+    <sequenceFlow id="flow-merge-to-result" sourceRef="merge-gw" targetRef="task-result" />
+    <userTask id="task-result" name="Результат" camunda:formKey="camunda-forms:deployment:inquiry-resolve-result.form" camunda:assignee="${starter}" camunda:candidateGroups="SELLER,ADMIN">
+      <extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="starter">${execution.getVariable('starter') == null ? 'demo' : starter}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </extensionElements>
+      <incoming>flow-merge-to-result</incoming>
+      <outgoing>flow-result-to-end</outgoing>
+    </userTask>
+    <sequenceFlow id="flow-result-to-end" sourceRef="task-result" targetRef="end" />
+    <endEvent id="end">
+      <incoming>flow-result-to-end</incoming>
+    </endEvent>
+    <sequenceFlow id="flow-error-confirm" sourceRef="error-boundary-confirm" targetRef="task-error" />
+    <sequenceFlow id="flow-error-reject" sourceRef="error-boundary-reject" targetRef="task-error" />
+    <userTask id="task-error" name="Ошибка" camunda:formKey="camunda-forms:deployment:inquiry-resolve-result.form" camunda:assignee="${starter}" camunda:candidateGroups="SELLER,ADMIN">
+      <extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="starter">${execution.getVariable('starter') == null ? 'demo' : starter}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </extensionElements>
+      <incoming>flow-error-confirm</incoming>
+      <incoming>flow-error-reject</incoming>
+      <outgoing>flow-error-to-end</outgoing>
+    </userTask>
+    <sequenceFlow id="flow-error-to-end" sourceRef="task-error" targetRef="error-end" />
+    <endEvent id="error-end">
+      <incoming>flow-error-to-end</incoming>
+    </endEvent>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="inquiry-resolve">
+      <bpmndi:BPMNShape id="shape-start" bpmnElement="start">
+        <omgdc:Bounds x="132" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-gw-decision" bpmnElement="gw-decision" isMarkerVisible="true">
+        <omgdc:Bounds x="255" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-confirm" bpmnElement="task-confirm">
+        <omgdc:Bounds x="380" y="38" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-reject" bpmnElement="task-reject">
+        <omgdc:Bounds x="380" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-merge-gw" bpmnElement="merge-gw" isMarkerVisible="true">
+        <omgdc:Bounds x="555" y="53" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-result" bpmnElement="task-result">
+        <omgdc:Bounds x="700" y="38" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-end" bpmnElement="end">
+        <omgdc:Bounds x="882" y="60" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-error" bpmnElement="task-error">
+        <omgdc:Bounds x="610" y="230" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-error-end" bpmnElement="error-end">
+        <omgdc:Bounds x="792" y="252" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-error-boundary-reject" bpmnElement="error-boundary-reject">
+        <omgdc:Bounds x="442" y="222" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-error-boundary-confirm" bpmnElement="error-boundary-confirm">
+        <omgdc:Bounds x="442" y="100" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge-flow-start-to-gw" bpmnElement="flow-start-to-gw">
+        <omgdi:waypoint x="168" y="120" />
+        <omgdi:waypoint x="255" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-gw-to-confirm" bpmnElement="flow-gw-to-confirm">
+        <omgdi:waypoint x="280" y="95" />
+        <omgdi:waypoint x="280" y="78" />
+        <omgdi:waypoint x="380" y="78" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-gw-to-reject" bpmnElement="flow-gw-to-reject">
+        <omgdi:waypoint x="280" y="145" />
+        <omgdi:waypoint x="280" y="200" />
+        <omgdi:waypoint x="380" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-confirm-to-merge" bpmnElement="flow-confirm-to-merge">
+        <omgdi:waypoint x="480" y="78" />
+        <omgdi:waypoint x="555" y="78" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-reject-to-merge" bpmnElement="flow-reject-to-merge">
+        <omgdi:waypoint x="480" y="200" />
+        <omgdi:waypoint x="580" y="200" />
+        <omgdi:waypoint x="580" y="103" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-merge-to-result" bpmnElement="flow-merge-to-result">
+        <omgdi:waypoint x="605" y="78" />
+        <omgdi:waypoint x="700" y="78" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-result-to-end" bpmnElement="flow-result-to-end">
+        <omgdi:waypoint x="800" y="78" />
+        <omgdi:waypoint x="882" y="78" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-error-confirm" bpmnElement="flow-error-confirm">
+        <omgdi:waypoint x="478" y="118" />
+        <omgdi:waypoint x="500" y="118" />
+        <omgdi:waypoint x="500" y="270" />
+        <omgdi:waypoint x="610" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-error-reject" bpmnElement="flow-error-reject">
+        <omgdi:waypoint x="460" y="258" />
+        <omgdi:waypoint x="460" y="270" />
+        <omgdi:waypoint x="610" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-error-to-end" bpmnElement="flow-error-to-end">
+        <omgdi:waypoint x="710" y="270" />
+        <omgdi:waypoint x="792" y="270" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

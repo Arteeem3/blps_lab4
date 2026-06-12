@@ -1,0 +1,29 @@
+{
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.21",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.22.0"
+  },
+  "schemaVersion": 11,
+  "components": [
+    {
+      "text": "# Результат",
+      "type": "text",
+      "id": "Field_1"
+    },
+    {
+      "label": "Сообщение",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1",
+        "columns": null
+      },
+      "id": "Field_deleteResult",
+      "key": "deleteResult",
+      "readonly": true
+    }
+  ],
+  "type": "default",
+  "id": "listing-delete-result"
+}

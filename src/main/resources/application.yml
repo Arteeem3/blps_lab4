@@ -1,0 +1,56 @@
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: cian
+  datasource:
+    jndi-name: java:/jdbc/studs
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        default_schema: ${DB_SCHEMA:s409599}
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+  jersey:
+    properties:
+      jersey.config.server.resource.validation.disable: true
+
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+camunda:
+  bpm:
+    auto-deployment-enabled: false
+    database:
+      schema-update: true
+    admin-user:
+      id: admin
+      password: admin
+      first-name: Admin
+      last-name: Camunda
+      email: admin@camunda.org
+    filter:
+      create: All Tasks
+    job-execution:
+      enabled: true
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:cianSecretKeyForDevelopmentOnlyChangeInProduction}
+    expiration-ms: 86400000
+  admin:
+    email: admin@cian.local
+    password: admin123
+  listing:
+    publication-days: 30
+    archive-grace-days: 7

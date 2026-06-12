@@ -1,0 +1,40 @@
+{
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.21",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.22.0"
+  },
+  "schemaVersion": 11,
+  "components": [
+    {
+      "text": "# Список заявок на показ",
+      "type": "text",
+      "id": "Field_1"
+    },
+    {
+      "label": "Мои заявки",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_1",
+        "columns": null
+      },
+      "id": "Field_inquiries",
+      "key": "inquiriesText",
+      "readonly": true
+    },
+    {
+      "label": "Завершить процесс?",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_2",
+        "columns": null
+      },
+      "id": "Field_finish",
+      "key": "finish",
+      "defaultValue": false
+    }
+  ],
+  "type": "default",
+  "id": "inquiry-list"
+}

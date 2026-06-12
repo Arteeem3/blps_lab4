@@ -1,0 +1,19 @@
+{
+  "components": [
+    {
+      "label": "ID объявления",
+      "type": "number",
+      "key": "listingId",
+      "validate": { "required": true }
+    },
+    {
+      "label": "Принудительно отклонить (для теста)",
+      "type": "checkbox",
+      "key": "forceReject",
+      "defaultValue": false
+    }
+  ],
+  "type": "default",
+  "id": "listing-publish-start",
+  "schemaVersion": 2
+}

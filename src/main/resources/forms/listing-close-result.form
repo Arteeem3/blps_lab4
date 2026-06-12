@@ -1,0 +1,23 @@
+{
+  "components": [
+    {
+      "text": "### Результат закрытия объявления",
+      "type": "text"
+    },
+    {
+      "label": "ID объявления",
+      "type": "number",
+      "key": "listingId",
+      "disabled": true
+    },
+    {
+      "label": "Статус",
+      "type": "textfield",
+      "key": "resultMessage",
+      "disabled": true
+    }
+  ],
+  "type": "default",
+  "id": "listing-close-result",
+  "schemaVersion": 2
+}

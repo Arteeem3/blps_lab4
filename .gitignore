@@ -1,0 +1,47 @@
+# Gradle build directories and cache
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+docs/
+example/
+
+# JVM & Log files
+*.log
+logs/
+hs_err_pid*
+
+# IDE Configurations
+## IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+## VS Code
+.vscode/
+
+## Eclipse & Spring Tool Suite
+.classpath
+.project
+.settings/
+.factorypath
+.apt_generated/
+.springBeans
+.sts4-cache
+bin/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Sensitive local configurations (DB credentials, secrets)
+src/main/resources/application-local.yml
+.env
+.env.local
+.env.*.local
+
+# Local application server installations
+wildfly/
+jboss/
+deployments/

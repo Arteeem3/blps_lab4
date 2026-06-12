@@ -1,0 +1,23 @@
+{
+  "components": [
+    {
+      "text": "### Результат публикации",
+      "type": "text"
+    },
+    {
+      "label": "ID объявления",
+      "type": "number",
+      "key": "listingId",
+      "disabled": true
+    },
+    {
+      "label": "Статус",
+      "type": "textfield",
+      "key": "resultMessage",
+      "disabled": true
+    }
+  ],
+  "type": "default",
+  "id": "listing-publish-result",
+  "schemaVersion": 2
+}

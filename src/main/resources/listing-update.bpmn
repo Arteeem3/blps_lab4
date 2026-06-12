@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+             targetNamespace="http://bpmn.io/schema/bpmn"
+             id="listing-update-definitions">
+  <process id="listing-update" name="[PUT] Обновить объявление" isExecutable="true" camunda:historyTimeToLive="180" camunda:candidateStarterGroups="SELLER,ADMIN">
+    <startEvent camunda:initiator="starter" id="start" camunda:formKey="camunda-forms:deployment:listing-update-start.form">
+      <outgoing>flow-start-to-update</outgoing>
+    </startEvent>
+
+    <serviceTask id="task-update" name="Обновить" camunda:delegateExpression="${listingUpdateDelegate}">
+      <incoming>flow-start-to-update</incoming>
+      <outgoing>flow-update-to-result</outgoing>
+    </serviceTask>
+
+    <userTask id="task-result" name="Результат" camunda:formKey="camunda-forms:deployment:listing-update-result.form" camunda:assignee="${starter}" camunda:candidateGroups="SELLER,ADMIN">
+      <extensionElements>
+        <camunda:inputOutput>
+           <camunda:inputParameter name="starter">${execution.getVariable('starter') == null ? 'demo' : starter}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </extensionElements>
+      <incoming>flow-update-to-result</incoming>
+      <outgoing>flow-result-to-end</outgoing>
+    </userTask>
+
+    <endEvent id="end">
+      <incoming>flow-result-to-end</incoming>
+    </endEvent>
+
+    <sequenceFlow id="flow-start-to-update" sourceRef="start" targetRef="task-update"/>
+    <sequenceFlow id="flow-update-to-result" sourceRef="task-update" targetRef="task-result"/>
+    <sequenceFlow id="flow-result-to-end" sourceRef="task-result" targetRef="end"/>
+  </process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_listing-update">
+    <bpmndi:BPMNPlane id="BPMNPlane_listing-update" bpmnElement="listing-update">
+      <bpmndi:BPMNShape id="start_di" bpmnElement="start"><omgdc:Bounds x="150" y="100" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task-update_di" bpmnElement="task-update"><omgdc:Bounds x="250" y="78" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task-result_di" bpmnElement="task-result"><omgdc:Bounds x="400" y="78" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_di" bpmnElement="end"><omgdc:Bounds x="550" y="100" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="flow-start-to-update_di" bpmnElement="flow-start-to-update"><omgdi:waypoint x="186" y="118"/><omgdi:waypoint x="250" y="118"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow-update-to-result_di" bpmnElement="flow-update-to-result"><omgdi:waypoint x="350" y="118"/><omgdi:waypoint x="400" y="118"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow-result-to-end_di" bpmnElement="flow-result-to-end"><omgdi:waypoint x="500" y="118"/><omgdi:waypoint x="550" y="118"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

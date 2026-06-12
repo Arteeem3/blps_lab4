@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+             targetNamespace="http://bpmn.io/schema/bpmn"
+             id="inquiry-view-definitions">
+  <process id="inquiry-view" name="[GET] Просмотр заявки" isExecutable="true" camunda:historyTimeToLive="180" camunda:candidateStarterGroups="SELLER,BUYER,ADMIN">
+    <startEvent camunda:initiator="starter" id="start" camunda:formKey="camunda-forms:deployment:inquiry-view-start.form">
+      <outgoing>flow-start-to-load</outgoing>
+    </startEvent>
+
+    <serviceTask id="task-load" name="Загрузить заявку" camunda:delegateExpression="${inquiryViewLoadDelegate}">
+      <incoming>flow-start-to-load</incoming>
+      <outgoing>flow-load-to-view</outgoing>
+    </serviceTask>
+
+    <userTask id="task-view" name="Просмотр" camunda:formKey="camunda-forms:deployment:inquiry-view.form" camunda:assignee="${starter}" camunda:candidateGroups="SELLER,BUYER,ADMIN">
+      <extensionElements>
+        <camunda:inputOutput>
+           <camunda:inputParameter name="starter">${execution.getVariable('starter') == null ? 'demo' : starter}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </extensionElements>
+      <incoming>flow-load-to-view</incoming>
+      <outgoing>flow-view-to-end</outgoing>
+    </userTask>
+
+    <endEvent id="end">
+      <incoming>flow-view-to-end</incoming>
+    </endEvent>
+
+    <sequenceFlow id="flow-start-to-load" sourceRef="start" targetRef="task-load"/>
+    <sequenceFlow id="flow-load-to-view" sourceRef="task-load" targetRef="task-view"/>
+    <sequenceFlow id="flow-view-to-end" sourceRef="task-view" targetRef="end"/>
+  </process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_inquiry-view">
+    <bpmndi:BPMNPlane id="BPMNPlane_inquiry-view" bpmnElement="inquiry-view">
+      <bpmndi:BPMNShape id="start_di" bpmnElement="start"><omgdc:Bounds x="150" y="100" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task-load_di" bpmnElement="task-load"><omgdc:Bounds x="250" y="78" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="task-view_di" bpmnElement="task-view"><omgdc:Bounds x="400" y="78" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_di" bpmnElement="end"><omgdc:Bounds x="550" y="100" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="flow-start-to-load_di" bpmnElement="flow-start-to-load"><omgdi:waypoint x="186" y="118"/><omgdi:waypoint x="250" y="118"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow-load-to-view_di" bpmnElement="flow-load-to-view"><omgdi:waypoint x="350" y="118"/><omgdi:waypoint x="400" y="118"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow-view-to-end_di" bpmnElement="flow-view-to-end"><omgdi:waypoint x="500" y="118"/><omgdi:waypoint x="550" y="118"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

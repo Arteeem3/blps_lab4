@@ -1,0 +1,40 @@
+{
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.21",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.22.0"
+  },
+  "schemaVersion": 11,
+  "components": [
+    {
+      "text": "# Результат оплаты",
+      "type": "text",
+      "id": "Field_1"
+    },
+    {
+      "label": "Статус",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1",
+        "columns": null
+      },
+      "id": "Field_paymentStatus",
+      "key": "paymentStatus",
+      "readonly": true
+    },
+    {
+      "label": "Сообщение",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_2",
+        "columns": null
+      },
+      "id": "Field_paymentMessage",
+      "key": "paymentMessage",
+      "readonly": true
+    }
+  ],
+  "type": "default",
+  "id": "listing-promotion-result"
+}

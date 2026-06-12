@@ -1,0 +1,109 @@
+{
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.21",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.22.0"
+  },
+  "schemaVersion": 11,
+  "components": [
+    {
+      "text": "# Создание объявления",
+      "type": "text",
+      "id": "Field_1"
+    },
+    {
+      "label": "Заголовок",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1",
+        "columns": null
+      },
+      "id": "Field_title",
+      "key": "title",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Описание",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_2",
+        "columns": null
+      },
+      "id": "Field_description",
+      "key": "description",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Адрес",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_3",
+        "columns": null
+      },
+      "id": "Field_address",
+      "key": "address",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Регион",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_3",
+        "columns": null
+      },
+      "id": "Field_region",
+      "key": "region",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Цена",
+      "type": "number",
+      "layout": {
+        "row": "Row_4",
+        "columns": null
+      },
+      "id": "Field_price",
+      "key": "price",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Площадь",
+      "type": "number",
+      "layout": {
+        "row": "Row_4",
+        "columns": null
+      },
+      "id": "Field_areaSqm",
+      "key": "areaSqm",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Комнат",
+      "type": "number",
+      "layout": {
+        "row": "Row_4",
+        "columns": null
+      },
+      "id": "Field_rooms",
+      "key": "rooms",
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default",
+  "id": "listing-create"
+}

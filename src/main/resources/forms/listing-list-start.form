@@ -1,0 +1,12 @@
+{
+  "components": [
+    {
+      "text": "# Просмотр списка объявлений\nНажмите **Start**, чтобы загрузить список активных объявлений.",
+      "type": "text",
+      "id": "Field_header"
+    }
+  ],
+  "type": "default",
+  "id": "listing-list-start",
+  "schemaVersion": 11
+}

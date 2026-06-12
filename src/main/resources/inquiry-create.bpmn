@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+             targetNamespace="http://bpmn.io/schema/bpmn"
+             id="inquiry-create-definitions">
+
+  <process id="inquiry-create" name="[POST] Создать заявку на показ" isExecutable="true"
+           camunda:historyTimeToLive="180"
+           camunda:candidateStarterGroups="BUYER,ADMIN">
+
+    <startEvent camunda:initiator="starter" id="start" camunda:formKey="camunda-forms:deployment:inquiry-create-start.form">
+      <outgoing>flow-start-to-fetch</outgoing>
+    </startEvent>
+
+    <sequenceFlow id="flow-start-to-fetch" sourceRef="start" targetRef="task-fetch" />
+
+    <serviceTask id="task-fetch" name="Загрузить объявления" camunda:delegateExpression="${inquiryFetchListingsDelegate}">
+      <incoming>flow-start-to-fetch</incoming>
+      <outgoing>flow-fetch-to-form</outgoing>
+    </serviceTask>
+
+    <sequenceFlow id="flow-fetch-to-form" sourceRef="task-fetch" targetRef="task-form" />
+
+    <userTask id="task-form" name="Форма заявки"
+              camunda:formKey="camunda-forms:deployment:inquiry-create.form"
+              camunda:candidateGroups="BUYER,ADMIN"
+              camunda:assignee="${starter}">
+      <extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="starter">${execution.getVariable('starter') == null ? 'demo' : starter}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </extensionElements>
+      <incoming>flow-fetch-to-form</incoming>
+      <outgoing>flow-form-to-create</outgoing>
+    </userTask>
+
+    <sequenceFlow id="flow-form-to-create" sourceRef="task-form" targetRef="task-create" />
+
+    <serviceTask id="task-create" name="Создать заявку" camunda:delegateExpression="${inquiryCreateDelegate}">
+      <incoming>flow-form-to-create</incoming>
+      <outgoing>flow-create-to-result</outgoing>
+    </serviceTask>
+
+    <boundaryEvent id="error-boundary-create" attachedToRef="task-create">
+      <outgoing>flow-error-to-error-task</outgoing>
+      <errorEventDefinition />
+    </boundaryEvent>
+
+    <sequenceFlow id="flow-create-to-result" sourceRef="task-create" targetRef="task-result" />
+
+    <userTask id="task-result" name="Результат"
+              camunda:formKey="camunda-forms:deployment:inquiry-create-result.form"
+              camunda:candidateGroups="BUYER,ADMIN"
+              camunda:assignee="${starter}">
+      <extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="starter">${execution.getVariable('starter') == null ? 'demo' : starter}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </extensionElements>
+      <incoming>flow-create-to-result</incoming>
+      <outgoing>flow-result-to-end</outgoing>
+    </userTask>
+
+    <sequenceFlow id="flow-result-to-end" sourceRef="task-result" targetRef="end" />
+
+    <endEvent id="end">
+      <incoming>flow-result-to-end</incoming>
+    </endEvent>
+
+    <sequenceFlow id="flow-error-to-error-task" sourceRef="error-boundary-create" targetRef="task-error" />
+
+    <userTask id="task-error" name="Ошибка"
+              camunda:formKey="camunda-forms:deployment:inquiry-create-result.form"
+              camunda:candidateGroups="BUYER,ADMIN"
+              camunda:assignee="${starter}">
+      <extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="starter">${execution.getVariable('starter') == null ? 'demo' : starter}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </extensionElements>
+      <incoming>flow-error-to-error-task</incoming>
+      <outgoing>flow-error-task-to-error-end</outgoing>
+    </userTask>
+
+    <sequenceFlow id="flow-error-task-to-error-end" sourceRef="task-error" targetRef="error-end" />
+
+    <endEvent id="error-end">
+      <incoming>flow-error-task-to-error-end</incoming>
+    </endEvent>
+
+  </process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="inquiry-create">
+      <bpmndi:BPMNShape id="shape-start" bpmnElement="start">
+        <omgdc:Bounds x="132" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-fetch" bpmnElement="task-fetch">
+        <omgdc:Bounds x="250" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-form" bpmnElement="task-form">
+        <omgdc:Bounds x="410" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-create" bpmnElement="task-create">
+        <omgdc:Bounds x="570" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-error-boundary-create" bpmnElement="error-boundary-create">
+        <omgdc:Bounds x="632" y="122" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-result" bpmnElement="task-result">
+        <omgdc:Bounds x="730" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-end" bpmnElement="end">
+        <omgdc:Bounds x="912" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-task-error" bpmnElement="task-error">
+        <omgdc:Bounds x="730" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-error-end" bpmnElement="error-end">
+        <omgdc:Bounds x="912" y="242" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge-flow-start-to-fetch" bpmnElement="flow-start-to-fetch">
+        <omgdi:waypoint x="168" y="100" />
+        <omgdi:waypoint x="250" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-fetch-to-form" bpmnElement="flow-fetch-to-form">
+        <omgdi:waypoint x="350" y="100" />
+        <omgdi:waypoint x="410" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-form-to-create" bpmnElement="flow-form-to-create">
+        <omgdi:waypoint x="510" y="100" />
+        <omgdi:waypoint x="570" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-create-to-result" bpmnElement="flow-create-to-result">
+        <omgdi:waypoint x="670" y="100" />
+        <omgdi:waypoint x="730" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-result-to-end" bpmnElement="flow-result-to-end">
+        <omgdi:waypoint x="830" y="100" />
+        <omgdi:waypoint x="912" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-error-to-error-task" bpmnElement="flow-error-to-error-task">
+        <omgdi:waypoint x="650" y="158" />
+        <omgdi:waypoint x="650" y="260" />
+        <omgdi:waypoint x="730" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-flow-error-task-to-error-end" bpmnElement="flow-error-task-to-error-end">
+        <omgdi:waypoint x="830" y="260" />
+        <omgdi:waypoint x="912" y="260" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</definitions>

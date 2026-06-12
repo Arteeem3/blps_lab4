@@ -1,0 +1,31 @@
+{
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.21",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.22.0"
+  },
+  "schemaVersion": 11,
+  "components": [
+    {
+      "text": "# Снять объявление с публикации",
+      "type": "text",
+      "id": "Field_1"
+    },
+    {
+      "label": "ID объявления",
+      "type": "number",
+      "layout": {
+        "row": "Row_1",
+        "columns": null
+      },
+      "id": "Field_listingId",
+      "key": "listingId",
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default",
+  "id": "listing-delete-start"
+}
